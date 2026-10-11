@@ -1,0 +1,12 @@
+{
+  "name": "claim-auditor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "server": "npm start --prefix server",
+    "client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "devDependencies": { "concurrently": "^9.0.0" }
+}
