@@ -42,3 +42,39 @@ export function score(findings, truth, excluded = new Set()) {
 }
 
 export const pct = (x) => (x == null ? 'n/a' : (x * 100).toFixed(0) + '%');
+
+const flat = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
+// Code-level evidence check: does each quote in a finding really appear in the paper?
+// Looks in the cited blocks first, then anywhere in the paper.
+export function quoteCheck(finding, blocks) {
+  const quotes = (finding.quotes || []).filter((q) => flat(q));
+  if (!quotes.length) return { total: 0, found: 0, inCited: 0 };
+  const cited = (finding.evidence_blocks || []).map(normId);
+  const citedText = flat(blocks.filter((b) => cited.includes(b.id)).map((b) => b.text).join(' '));
+  const allText = flat(blocks.map((b) => b.text).join(' '));
+  let found = 0;
+  let inCited = 0;
+  for (const q of quotes) {
+    const n = flat(q);
+    if (citedText.includes(n)) { found++; inCited++; } else if (allText.includes(n)) found++;
+  }
+  return { total: quotes.length, found, inCited };
+}
+
+export function quoteStats(findings, blocks) {
+  let total = 0;
+  let found = 0;
+  for (const f of findings) { const q = quoteCheck(f, blocks); total += q.total; found += q.found; }
+  return { total, found, rate: total ? found / total : null };
+}
+
+// Audit badge for one item of the structured analysis.
+// disputed = the item cites a block that a confirmed finding also cites.
+export function auditStatus(item, confirmedFindings) {
+  const blocks = (item.blocks || []).map(normId);
+  if (!blocks.length) return String(item.text || '').trim().toUpperCase() === 'NOT STATED' ? 'not_stated' : 'unsourced';
+  const set = new Set(blocks);
+  const hit = confirmedFindings.some((f) => (f.evidence_blocks || []).map(normId).some((b) => set.has(b)));
+  return hit ? 'disputed' : 'clean';
+}
