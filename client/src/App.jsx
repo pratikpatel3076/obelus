@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { ingest, getPrompt, saveRun, listRuns } from './api.js';
-import { extractJson, score, pct, normId } from './score.js';
+import { extractJson, score, pct, normId, quoteCheck, quoteStats, auditStatus } from './score.js';
 
 const MODES = [
   { key: 'baseline', label: 'Baseline (1 prompt)' },
@@ -11,7 +11,7 @@ const MODES = [
 export default function App() {
   const [tab, setTab] = useState('load');
   const [paper, setPaper] = useState(null);
-  const [data, setData] = useState({ baseline: null, claims: null, chainRaw: null, chainFinal: null });
+  const [data, setData] = useState({ baseline: null, claims: null, chainRaw: null, chainFinal: null, analysis: null });
   const [excluded, setExcluded] = useState({ baseline: [], chainRaw: [], chainFinal: [] });
   const [active, setActive] = useState([]);
   const [reveal, setReveal] = useState(false);
@@ -24,10 +24,10 @@ export default function App() {
     const out = {};
     for (const m of MODES) {
       const f = data[m.key]?.findings;
-      out[m.key] = f ? score(f, truth, new Set(excluded[m.key])) : null;
+      out[m.key] = f ? { ...score(f, truth, new Set(excluded[m.key])), quotes: quoteStats(f, paper?.blocks || []) } : null;
     }
     return out;
-  }, [data, truth, excluded]);
+  }, [data, truth, excluded, paper]);
 
   function focusBlocks(ids) {
     const norm = ids.map(normId);
@@ -39,7 +39,7 @@ export default function App() {
   async function onSave() {
     const run = {
       paper: paper.name, seed: paper.seed, planted: paper.planted, truth,
-      baseline: data.baseline?.findings || [], chainRaw: data.chainRaw?.findings || [], chainFinal: data.chainFinal?.findings || [],
+      baseline: data.baseline?.findings || [], chainRaw: data.chainRaw?.findings || [], chainFinal: data.chainFinal?.findings || [], analysis: data.analysis?.json || null,
       excluded, metrics: Object.fromEntries(MODES.map((m) => [m.key, metrics[m.key] && { ...metrics[m.key], labels: undefined }])),
       savedAt: new Date().toISOString(),
     };
@@ -75,14 +75,15 @@ export default function App() {
         </section>
         <section className="work">
           <nav>
-            {[['load', '1 Load'], ['baseline', '2 Baseline'], ['chain', '3 Chain'], ['score', '4 Findings & score'], ['results', '5 All runs']].map(([k, l]) => (
+            {[['load', '1 Load'], ['baseline', '2 Baseline'], ['chain', '3 Chain'], ['analysis', '4 Audited analysis'], ['score', '5 Findings & score'], ['results', '6 All runs']].map(([k, l]) => (
               <button key={k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>{l}</button>
             ))}
           </nav>
           {msg && <div className="msg" onClick={() => setMsg('')}>{msg}</div>}
-          {tab === 'load' && <Load onLoaded={(p) => { setPaper(p); setData({ baseline: null, claims: null, chainRaw: null, chainFinal: null }); setExcluded({ baseline: [], chainRaw: [], chainFinal: [] }); setActive([]); setTab('baseline'); }} setMsg={setMsg} paper={paper} reveal={reveal} setReveal={setReveal} />}
+          {tab === 'load' && <Load onLoaded={(p) => { setPaper(p); setData({ baseline: null, claims: null, chainRaw: null, chainFinal: null, analysis: null }); setExcluded({ baseline: [], chainRaw: [], chainFinal: [] }); setActive([]); setTab('baseline'); }} setMsg={setMsg} paper={paper} reveal={reveal} setReveal={setReveal} />}
           {tab === 'baseline' && <Baseline paper={paper} value={data.baseline} onChange={(v) => setData({ ...data, baseline: v })} setMsg={setMsg} />}
           {tab === 'chain' && <Chain paper={paper} data={data} setData={setData} setMsg={setMsg} />}
+          {tab === 'analysis' && <Analysis paper={paper} data={data} focusBlocks={focusBlocks} active={active} />}
           {tab === 'score' && <Score paper={paper} data={data} metrics={metrics} mode={mode} setMode={setMode} excluded={excluded} setExcluded={setExcluded} focusBlocks={focusBlocks} active={active} onSave={onSave} reveal={reveal} />}
           {tab === 'results' && <Results />}
         </section>
@@ -166,7 +167,12 @@ function Chain({ paper, data, setData, setMsg }) {
         onParse={(raw, j) => setData({ ...data, chainRaw: { raw, findings: j.findings || [] }, chainFinal: null })} setMsg={setMsg} />
       <PromptStep label="Stage 3" title="Stage 3: verify the findings" stage="stage3" blocks={b} payload={data.chainRaw && JSON.stringify({ findings: data.chainRaw.findings })} disabled={!data.chainRaw} value={data.chainFinal}
         desc="Independent verifier confirms or rejects each finding. New chat."
-        onParse={(raw, j) => setData({ ...data, chainFinal: { raw, findings: j.findings || [], rejected: j.rejected || [] } })} setMsg={setMsg} />
+        onParse={(raw, j) => setData({ ...data, chainFinal: { raw, findings: j.findings || [], rejected: j.rejected || [] }, analysis: null })} setMsg={setMsg} />
+      <PromptStep label="Stage 4" title="Stage 4: audited analysis (8 fields)" stage="stage4" blocks={b}
+        payload={data.chainFinal && JSON.stringify({ confirmed_findings: data.chainFinal.findings.map((f) => ({ id: f.id, type: f.type, claim: f.claim, evidence_blocks: f.evidence_blocks, quotes: f.quotes })) })}
+        disabled={!data.chainFinal} value={data.analysis}
+        desc="Writes problem, objectives, methodology, dataset, algorithms, results, limitations and future work from the paper, told which numbers are disputed. New chat."
+        onParse={(raw, j) => setData({ ...data, analysis: { raw, json: j } })} setMsg={setMsg} />
     </div>
   );
 }
@@ -179,12 +185,12 @@ function Score({ paper, data, metrics, mode, setMode, excluded, setExcluded, foc
   return (
     <div>
       <table className="metrics">
-        <thead><tr><th></th><th>Found</th><th>Correct</th><th>False</th><th>Caught / planted</th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead>
+        <thead><tr><th></th><th>Found</th><th>Correct</th><th>False</th><th>Caught / planted</th><th>Precision</th><th>Recall</th><th>F1</th><th>Quotes found in paper</th></tr></thead>
         <tbody>
           {MODES.map((m) => { const s = metrics[m.key]; return (
             <tr key={m.key} className={mode === m.key ? 'sel' : ''} onClick={() => setMode(m.key)}>
               <td>{m.label}</td>
-              {s ? <><td>{s.found}</td><td>{s.tp}</td><td>{s.fp}</td><td>{s.caught}/{s.planted}</td><td>{pct(s.precision)}</td><td>{pct(s.recall)}</td><td>{pct(s.f1)}</td></> : <td colSpan={7} className="muted">not run yet</td>}
+              {s ? <><td>{s.found}</td><td>{s.tp}</td><td>{s.fp}</td><td>{s.caught}/{s.planted}</td><td>{pct(s.precision)}</td><td>{pct(s.recall)}</td><td>{pct(s.f1)}</td><td>{s.quotes.total ? `${s.quotes.found}/${s.quotes.total} (${pct(s.quotes.rate)})` : 'n/a'}</td></> : <td colSpan={8} className="muted">not run yet</td>}
             </tr>); })}
         </tbody>
       </table>
@@ -196,6 +202,7 @@ function Score({ paper, data, metrics, mode, setMode, excluded, setExcluded, foc
             <b>{f.id}</b> <span className="chip">{f.type}</span> <span className="chip">{f.confidence}</span>
             {(f.evidence_blocks || []).map((e) => <span key={e} className={'chip blk' + (active.includes(normId(e)) ? ' on' : '')}>{normId(e)}</span>)}
             {paper.planted && <span className={'badge ' + labels[f.id]}>{labels[f.id]}</span>}
+            <QuoteBadge f={f} blocks={paper.blocks} />
           </div>
           <p>{f.claim}</p>
           {(f.quotes || []).map((q, i) => <blockquote key={i}>{q}</blockquote>)}
@@ -239,6 +246,48 @@ function Results() {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+
+export function QuoteBadge({ f, blocks }) {
+  const q = quoteCheck(f, blocks);
+  if (!q.total) return <span className="badge unsourced">no quotes</span>;
+  const ok = q.found === q.total;
+  return <span className={'badge ' + (ok ? 'clean' : 'disputed')} title="Checked by code: is each quote really in the paper?">quotes {q.found}/{q.total}{ok && q.inCited < q.total ? ' (other block)' : ''}</span>;
+}
+
+const FIELDS = [['problem', 'Problem'], ['objectives', 'Objectives'], ['methodology', 'Methodology'], ['dataset', 'Dataset'], ['algorithms', 'Algorithms'], ['results', 'Results'], ['limitations', 'Limitations'], ['future_work', 'Future work']];
+const STATUS_LABEL = { clean: 'no conflict found', disputed: 'DISPUTED', not_stated: 'not stated', unsourced: 'no source block' };
+
+export function Analysis({ paper, data, focusBlocks, active }) {
+  if (!paper) return <p className="muted">Load a paper first.</p>;
+  if (!data.analysis) return <p className="muted">Run stage 4 in tab 3 to see the structured analysis with audit badges.</p>;
+  const confirmed = (data.chainFinal || data.chainRaw)?.findings || [];
+  const a = data.analysis.json.analysis || {};
+  const all = FIELDS.flatMap(([k]) => a[k] || []);
+  const counts = all.reduce((c, it) => { const s = auditStatus(it, confirmed); c[s] = (c[s] || 0) + 1; return c; }, {});
+  return (
+    <div>
+      <p className="muted">Each sentence is tagged by code: <b>DISPUTED</b> if it cites a block that a confirmed finding also cites, <b>not stated</b> if the paper is silent, otherwise <b>no conflict found</b>. Click a sentence to highlight its source.</p>
+      <p>{all.length} statements: {counts.clean || 0} clean, {counts.disputed || 0} disputed, {counts.not_stated || 0} not stated, {counts.unsourced || 0} without a source.</p>
+      {data.analysis.json.summary && <blockquote>{data.analysis.json.summary}</blockquote>}
+      {FIELDS.map(([k, label]) => (
+        <div key={k} className="field">
+          <h3>{label}</h3>
+          {(a[k] || []).length === 0 && <p className="muted">No items returned.</p>}
+          {(a[k] || []).map((it, i) => {
+            const st = auditStatus(it, confirmed);
+            return (
+              <p key={i} className={'item ' + st} onClick={() => focusBlocks(it.blocks || [])}>
+                <span className={'badge ' + st}>{STATUS_LABEL[st]}</span> {it.text}
+                {(it.blocks || []).map((e) => <span key={e} className={'chip blk' + (active.includes(normId(e)) ? ' on' : '')}>{normId(e)}</span>)}
+              </p>
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

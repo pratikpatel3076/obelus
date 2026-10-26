@@ -29,3 +29,7 @@ label { display:block; font-size:13px; margin:6px 0; }
 .badge { font-size:11px; padding:1px 7px; border-radius:10px; margin-left:6px; color:#fff; } .badge.TP { background:var(--ok); } .badge.FP { background:var(--bad); } .badge.genuine { background:#999; }
 .truth { margin-top:14px; padding:10px; border:1px dashed var(--bad); border-radius:8px; font-size:13px; }
 @media (max-width: 900px) { .grid { grid-template-columns: 1fr; height:auto; } }
+
+.badge.clean { background: var(--ok); } .badge.disputed { background: #d9822b; } .badge.not_stated, .badge.unsourced { background: #8a8f9c; }
+.field { border:1px solid var(--line); border-radius:10px; padding:4px 12px 8px; margin:10px 0; } .field h3 { margin:8px 0 4px; }
+.item { cursor:pointer; margin:6px 0; font-size:13px; padding:4px 6px; border-radius:6px; } .item:hover { background:var(--bg); } .item.disputed { background:#fff4e5; }
