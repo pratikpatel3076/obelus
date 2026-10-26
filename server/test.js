@@ -33,4 +33,9 @@ const blocks = chunk(a.text, 200);
 assert.ok(blocks.length > 1 && blocks[0].id === 'C01');
 a.truth.forEach((t) => assert.ok(blockOf(blocks, t), 'every planted error maps to a block: ' + t.id));
 assert.ok(prompts.stage2(blocks, '{"claims":[]}').includes('[C01]'));
+assert.ok(prompts.stage4(blocks, '{"findings":[]}').includes('future_work'));
+// the planted sentence must follow a line that ends a sentence
+const ls = a.text.split('\n');
+const k = ls.findIndex((l) => l.includes('best-performing model reported to date'));
+assert.ok(/[.!?]$/.test(ls[k - 1].trim()), 'planted claim must not cut a sentence');
 console.log('OK:', a.truth.map((t) => `${t.id} ${t.type} ${t.original}->${t.tampered}`).join(' | '));

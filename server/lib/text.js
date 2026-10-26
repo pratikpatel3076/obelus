@@ -87,7 +87,9 @@ function plantErrors(text, seed = 1, numericCount = 2) {
     });
   }
 
-  let at = lines.findIndex((l, i) => i >= 3 && l.trim().length > 70 && !/abstract|keywords/i.test(l));
+  // insert only after a line that ends a sentence, so the planted claim never cuts a sentence in half
+  let at = lines.findIndex((l, i) => i >= 3 && l.trim().length > 40 && /[.!?]["')\]]?$/.test(l.trim()) && !/abstract|keywords/i.test(l));
+  if (at < 0) at = lines.findIndex((l) => /[.!?]$/.test(l.trim()));
   if (at < 0) at = 0;
   lines.splice(at + 1, 0, INSERTED);
   truth.push({
