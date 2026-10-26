@@ -71,7 +71,7 @@ app.post('/api/ingest', upload.single('file'), async (req, res) => {
 
 app.post('/api/prompt', (req, res) => {
   const { stage, blocks, payload } = req.body;
-  const build = { baseline: prompts.baseline, stage1: prompts.stage1, stage2: prompts.stage2, stage3: prompts.stage3 }[stage];
+  const build = { baseline: prompts.baseline, stage1: prompts.stage1, stage2: prompts.stage2, stage3: prompts.stage3, stage4: prompts.stage4 }[stage];
   if (!build || !Array.isArray(blocks)) return res.status(400).json({ error: 'Bad request' });
   res.json({ prompt: build(blocks, payload) });
 });

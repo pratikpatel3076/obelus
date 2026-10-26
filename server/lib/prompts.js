@@ -93,4 +93,28 @@ Return only JSON:
 "rejected":[{"id":"F2","reason":"one sentence"}]}`;
 }
 
-module.exports = { baseline, stage1, stage2, stage3 };
+
+function stage4(blocks, auditJson) {
+  return `ROLE
+You are a research analyst writing a structured briefing for a second-year B.Tech student. Use ONLY the numbered blocks. Never use outside knowledge.
+
+AUDIT NOTES (confirmed contradictions and unsupported claims found earlier in this paper):
+${auditJson}
+
+PAPER:
+${paper(blocks)}
+
+TASK
+Fill these eight fields: problem, objectives, methodology, dataset, algorithms, results, limitations, future_work.
+- Each field is a list of items. Each item is one sentence plus the block IDs it comes from.
+- If the paper says nothing about a field, use [{"text":"NOT STATED","blocks":[]}]. Never invent a limitation or future-work item.
+- If a number you want to report appears in the AUDIT NOTES as conflicting, report both values and say they conflict.
+- Do not repeat a claim from the AUDIT NOTES that is marked unsupported as if it were a result.
+- Finish with "summary": three plain-language sentences.
+
+OUTPUT
+Return only JSON:
+{"analysis":{"problem":[{"text":"...","blocks":["C01"]}],"objectives":[],"methodology":[],"dataset":[],"algorithms":[],"results":[],"limitations":[],"future_work":[]},"summary":"..."}`;
+}
+
+module.exports = { baseline, stage1, stage2, stage3, stage4 };
