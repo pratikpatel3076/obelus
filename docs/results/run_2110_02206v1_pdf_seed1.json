@@ -1,0 +1,1019 @@
+{
+  "paper": "2110.02206v1.pdf",
+  "seed": 1,
+  "planted": true,
+  "truth": [
+    {
+      "id": "T1",
+      "type": "numeric_mismatch",
+      "original": "100%",
+      "tampered": "114%",
+      "snippet": "fault. For example, a precision of 114% means",
+      "description": "\"100%\" changed to \"114%\" in one place; the original value still appears elsewhere.",
+      "block": "C08"
+    },
+    {
+      "id": "T2",
+      "type": "numeric_mismatch",
+      "original": "10.1007",
+      "tampered": "10.4007",
+      "snippet": "n Computer Science. 3408. 345-359. 10.4007/978-3-540-31865-1_25.",
+      "description": "\"10.1007\" changed to \"10.4007\" in one place; the original value still appears elsewhere.",
+      "block": "C18"
+    },
+    {
+      "id": "T3",
+      "type": "unsupported_claim",
+      "original": "",
+      "tampered": "Our approach outperforms every prior method on every benchmark and is the best-performing model reported to date.",
+      "snippet": "Our approach outperforms every prior method on every benchmark and is the best-performing model reported to date.",
+      "description": "Inserted a superlative claim that no experiment in the paper supports.",
+      "block": "C02"
+    }
+  ],
+  "baseline": [
+    {
+      "id": "F1",
+      "type": "unsupported_claim",
+      "claim": "The abstract claims the approach outperforms every prior method on every benchmark and is the best model reported to date, but the paper compares only seven of its own models on one dataset and makes no comparison with prior work.",
+      "evidence_blocks": [
+        "C02",
+        "C14"
+      ],
+      "quotes": [
+        "Our approach outperforms every prior method on every benchmark and is the best-performing model reported to date.",
+        "each model was compared on the basis of two evaluation metrics"
+      ],
+      "explanation": "No prior methods or benchmarks are evaluated anywhere. The only results are an internal comparison of seven classifiers on a single Kaggle dataset.",
+      "confidence": "high"
+    },
+    {
+      "id": "F2",
+      "type": "numeric_mismatch",
+      "claim": "The reported LGBM accuracy in the text (95.35%) does not match Table 3 (0.9552716, about 95.53%).",
+      "evidence_blocks": [
+        "C14"
+      ],
+      "quotes": [
+        "LGBM0.9552716",
+        "an AUC of 0.99 and an accuracy of 95.35%"
+      ],
+      "explanation": "The table value rounds to 95.53%, while the text states 95.35%, which looks like transposed digits.",
+      "confidence": "high"
+    },
+    {
+      "id": "F3",
+      "type": "numeric_mismatch",
+      "claim": "The paper gives the number of models as seven in some places and six in others.",
+      "evidence_blocks": [
+        "C01",
+        "C14"
+      ],
+      "quotes": [
+        "Six contemporary machine learning models were compared",
+        "A total of 7 machine learning classification models are used to determine credit defaults."
+      ],
+      "explanation": "The abstract, the design section and Table 3 all list seven models. The conclusion says six, and the introduction lists only six names, omitting KNN.",
+      "confidence": "high"
+    },
+    {
+      "id": "F4",
+      "type": "numeric_mismatch",
+      "claim": "The example precision of 114% is impossible, since precision cannot exceed 100%.",
+      "evidence_blocks": [
+        "C08"
+      ],
+      "quotes": [
+        "a precision of 114% means"
+      ],
+      "explanation": "Precision is TP/(TP+FP) and so lies between 0 and 1. The example should be a value of at most 100%.",
+      "confidence": "high"
+    },
+    {
+      "id": "F5",
+      "type": "numeric_mismatch",
+      "claim": "The number of features is inconsistent. Table 1 has 18 variables, and the merged dataset is said to have 17 features, which should be at least 18 or 20 once the credit table is combined.",
+      "evidence_blocks": [
+        "C05",
+        "C06",
+        "C07"
+      ],
+      "quotes": [
+        "each of them characterized by 18 labeled variables",
+        "a new dataset with 17 features is created"
+      ],
+      "explanation": "Merging 18 application variables with the credit variables cannot give 17 features, and the paper does not account for the difference. The 3 'excavated' features are also not accounted for.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F6",
+      "type": "contradiction",
+      "claim": "The STATUS code definitions conflict with the description of MONTHS_BALANCE and the severity scale. Status 0 is defined as 1-29 days past due, yet 0 is also described as no delay.",
+      "evidence_blocks": [
+        "C06"
+      ],
+      "quotes": [
+        "0 = no delay in payment, -1 = payment delay of 1 month",
+        "0: 1-29 days past due"
+      ],
+      "explanation": "The explanation of 'Monthly Balance' as a payment delay (0 = no delay) conflicts with the actual MONTHS_BALANCE definition (0 = current month, -1 = previous month) given a few lines later. The paper confuses the two variables.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F7",
+      "type": "contradiction",
+      "claim": "The paper recommends LGBM for large datasets and says it is suited to them, but also admits the credit dataset is not large enough for LGBM.",
+      "evidence_blocks": [
+        "C12",
+        "C14",
+        "C15"
+      ],
+      "quotes": [
+        "Since the credit dataset is not large enough for a LGBM classifier",
+        "This model is also best suited for deployment on larger datasets."
+      ],
+      "explanation": "The paper says LGBM is meant for large data and that this dataset is too small. It then uses this dataset to claim LGBM's superiority on large datasets without testing any.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F8",
+      "type": "contradiction",
+      "claim": "LGBM is said to grow trees leaf-wise (vertically) and is then described as using a 'horizontal' leaf-wise approach, while level-wise growth is called horizontal.",
+      "evidence_blocks": [
+        "C12",
+        "C14"
+      ],
+      "quotes": [
+        "a LGBM tree grows vertically (leaf node wise)",
+        "leaf node wise horizontal approach"
+      ],
+      "explanation": "Leaf-wise growth is called vertical in one place and horizontal in another, contradicting the earlier statement that horizontal means level-wise.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F9",
+      "type": "contradiction",
+      "claim": "The paper states that the best ROC fits are XGBoost and LGBM, yet it says LGBM was statistically better than the other classifiers with no statistical test reported.",
+      "evidence_blocks": [
+        "C13",
+        "C14"
+      ],
+      "quotes": [
+        "The best fits are XGBoost and LGBM classifier in this case.",
+        "LGBM classifier performed statistically better than other classifiers"
+      ],
+      "explanation": "No significance test is reported, and the first statement treats XGBoost and LGBM as comparable.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F10",
+      "type": "other",
+      "claim": "The num_leaves guidance and the learning rate description are technically wrong or inconsistent. Max_depth is said to be inversely proportional to overfitting, and the typical learning rates cited are very small.",
+      "evidence_blocks": [
+        "C12",
+        "C13"
+      ],
+      "quotes": [
+        "It is inversely proportional to overfitting.",
+        "Ideal value must be less than or equal to2"
+      ],
+      "explanation": "A larger max_depth increases overfitting risk, so reducing it when overfitting is detected implies a direct, not inverse, relationship. The num_leaves default of 31 is also described inconsistently with the 2^max_depth rule.",
+      "confidence": "low"
+    },
+    {
+      "id": "F11",
+      "type": "other",
+      "claim": "Random Forest is described as averaging class predictions to compute 'the accuracy' of the model, which is a conceptual error.",
+      "evidence_blocks": [
+        "C12"
+      ],
+      "quotes": [
+        "These class predictions are then combined to compute their average which is the accuracy of the classification model."
+      ],
+      "explanation": "The averaged or voted tree predictions yield the forest's prediction, not its accuracy.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F12",
+      "type": "other",
+      "claim": "SVM is described as a linear model, while the paper describes the gamma hyperparameter for curvature of the boundary. Gamma applies to the RBF kernel and implies non-linearity.",
+      "evidence_blocks": [
+        "C10",
+        "C11"
+      ],
+      "quotes": [
+        "Support Vector Machine (SVM) is a linear model for classification.",
+        "Determines the curvature needed in a decision boundary"
+      ],
+      "explanation": "Describing SVM as linear is inconsistent with using a gamma curvature parameter.",
+      "confidence": "low"
+    },
+    {
+      "id": "F13",
+      "type": "contradiction",
+      "claim": "The paper claims that Logistic Regression's overfitting increases with more training data and that its accuracy is poor, which conflicts with standard behaviour. The ideal ROC curve is also described inconsistently.",
+      "evidence_blocks": [
+        "C10"
+      ],
+      "quotes": [
+        "its overfitting behavior becomes even more prominent with an increase in training data",
+        "An ideal ROC curve is the one which coincides with the Y-axis"
+      ],
+      "explanation": "Overfitting normally decreases as training data grows. The ideal ROC curve hugs the left and top edges, not only the Y-axis.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F14",
+      "type": "contradiction",
+      "claim": "The paper says the best models are in the upper left with 'no False Negatives', yet also says AUROC does not capture performance with heavily imbalanced data. It still relies on AUC 0.99 and accuracy on a SMOTE-balanced setup.",
+      "evidence_blocks": [
+        "C10",
+        "C13"
+      ],
+      "quotes": [
+        "representing a very high recall (no False Negatives)",
+        "does not capture the proper performance of models built for"
+      ],
+      "explanation": "The evaluation relies on accuracy and AUC despite imbalance, and no precision, recall or F1 results are reported even though the design section says a classification report is produced.",
+      "confidence": "low"
+    },
+    {
+      "id": "F15",
+      "type": "contradiction",
+      "claim": "The paper says credit risk has existed since the 1990s and that credit history was adopted after the technology boom, but also calls it the oldest form of risk, with dates that do not fit together.",
+      "evidence_blocks": [
+        "C02",
+        "C03"
+      ],
+      "quotes": [
+        "Credit risk is the oldest form of risk in the financial markets",
+        "After the technology boom in the mid-1990s, companies switched to a technique"
+      ],
+      "explanation": "The text says credit history was adopted after the mid-1990s, yet banks are said to have already been using credit history to set risk. The two timelines are inconsistent.",
+      "confidence": "low"
+    },
+    {
+      "id": "F16",
+      "type": "other",
+      "claim": "The delinquency trend statement is inconsistent: delinquency rates are said to be falling in the past year, while the Research Problem section says they are on the rise.",
+      "evidence_blocks": [
+        "C05"
+      ],
+      "quotes": [
+        "Delinquency rates have dropped in the past year due to the pandemic",
+        "delinquency rates are on the rise"
+      ],
+      "explanation": "The same section describes delinquency rates as both falling and rising without reconciling the two claims.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F17",
+      "type": "unsupported_claim",
+      "claim": "The paper claims SMOTE oversampling is proven and that the training set was verified as balanced, but no class distribution or balance check is reported, and SMOTE application relative to the train/test split is unclear.",
+      "evidence_blocks": [
+        "C07"
+      ],
+      "quotes": [
+        "The training dataset is then verified for being balanced in order to eliminate skewed"
+      ],
+      "explanation": "No default rate or post-SMOTE class counts are given, and it is unclear whether SMOTE was applied only to the training split. Applying it before splitting would inflate the reported accuracy.",
+      "confidence": "low"
+    }
+  ],
+  "chainRaw": [
+    {
+      "id": "F1",
+      "type": "numeric_mismatch",
+      "claim": "The number of models compared is given as seven in the abstract and Section 4.1, but as six in the Introduction and the Conclusion.",
+      "evidence_blocks": [
+        "C01",
+        "C08",
+        "C14"
+      ],
+      "quotes": [
+        "On running the research dataset through seven different machine learning models",
+        "A total of 7 machine learning classification models are used to determine credit defaults.",
+        "Six contemporary machine learning models were compared, to identify the most efficient and best performing model."
+      ],
+      "explanation": "Table 3 lists seven models (including KNN), so the Conclusion's 'Six' is inconsistent with the abstract, Section 4.1 and the table. The Introduction also names only six models and omits KNN.",
+      "confidence": "high"
+    },
+    {
+      "id": "F2",
+      "type": "numeric_mismatch",
+      "claim": "LGBM accuracy in the Conclusion text (95.35%) differs from the value in Table 3 (0.9552716, i.e. 95.53%).",
+      "evidence_blocks": [
+        "C14"
+      ],
+      "quotes": [
+        "with an AUC of 0.99 and an accuracy of 95.35%",
+        "LGBM0.9552716"
+      ],
+      "explanation": "95.35% and 95.53% differ by about 0.18 percentage points, which looks like a digit transposition rather than rounding.",
+      "confidence": "high"
+    },
+    {
+      "id": "F3",
+      "type": "numeric_mismatch",
+      "claim": "The number of application variables (18) and merged features (17) are inconsistent with Table 1, the variable counts and the 3 features removed.",
+      "evidence_blocks": [
+        "C05",
+        "C06",
+        "C07"
+      ],
+      "quotes": [
+        "each of them characterized by 18 labeled variables",
+        "OCCUPATION_TYPEType of Occupation",
+        "Merging the application dataset and credit dataset, a new dataset with 17 features is created."
+      ],
+      "explanation": "Table 1 lists 18 features including ID, and Table 2 adds MONTHS_BALANCE and STATUS (ID is shared), which gives roughly 19-20 columns after merging rather than 17. Whether the 17 is counted before or after the removal of 3 features is not stated, and the merge itself is not described.",
+      "confidence": "low"
+    },
+    {
+      "id": "F4",
+      "type": "unsupported_claim",
+      "claim": "The abstract claims the method outperforms every prior method on every benchmark and is the best reported to date, but no experiment compares against prior work or any benchmark.",
+      "evidence_blocks": [
+        "C02",
+        "C14"
+      ],
+      "quotes": [
+        "Our approach outperforms every prior method on every benchmark and is the best-performing model reported to date.",
+        "Six contemporary machine learning models were compared, to identify the most efficient and best performing model."
+      ],
+      "explanation": "Only seven in-paper models are compared on one dataset, with no prior methods, named benchmarks or literature comparison reported.",
+      "confidence": "high"
+    },
+    {
+      "id": "F5",
+      "type": "contradiction",
+      "claim": "The paper says LGBM is suited to large datasets and manages larger data volumes, but admits its own dataset is not large enough for LGBM.",
+      "evidence_blocks": [
+        "C02",
+        "C12",
+        "C15"
+      ],
+      "quotes": [
+        "Since the credit dataset is not large enough for a LGBM classifier",
+        "This model is also best suited for deployment on larger datasets.",
+        "better equipped to deliver higher learning speeds, better efficiencies"
+      ],
+      "explanation": "No experiment tests scalability or larger datasets, and the paper concedes the dataset is not suited to LGBM. Claims about large-data advantage are therefore unsupported and conflict with this admission. The 1,048,575-row credit history table also sits awkwardly with 'not large enough'.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F6",
+      "type": "unsupported_claim",
+      "claim": "Claims of higher learning speed, training speed, efficiency and lower memory use for LGBM are not backed by any reported timing or memory measurement.",
+      "evidence_blocks": [
+        "C01",
+        "C14"
+      ],
+      "quotes": [
+        "better equipped to deliver higher learning speeds, better efficiencies",
+        "Greater efficiency and training speed"
+      ],
+      "explanation": "The only evaluation metrics reported are accuracy and AUC (Conclusion lists exactly two). No training time, memory or efficiency results appear anywhere.",
+      "confidence": "high"
+    },
+    {
+      "id": "F7",
+      "type": "unsupported_claim",
+      "claim": "LGBM is claimed statistically better than other classifiers, but no statistical test is reported, and AUC values for other models are not given.",
+      "evidence_blocks": [
+        "C14",
+        "C13"
+      ],
+      "quotes": [
+        "LGBM classifier performed statistically better than other classifiers and was closest",
+        "Higher AUC values indicate a better fit. The best fits are XGBoost and LGBM classifier in this case."
+      ],
+      "explanation": "No significance test, confidence interval or per-model AUC table is shown. The ROC section itself names XGBoost and LGBM as joint best fits, which does not establish LGBM as significantly better by AUC.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F8",
+      "type": "contradiction",
+      "claim": "The paper says LGBM has the highest accuracy and best performance, yet it also states AUC ranks XGBoost and LGBM together, and accuracy is a poor metric for imbalanced data.",
+      "evidence_blocks": [
+        "C13",
+        "C14",
+        "C03"
+      ],
+      "quotes": [
+        "The best fits are XGBoost and LGBM classifier in this case.",
+        "LGBM has the highest accuracy score and is thus, the most preferred model for credit scoring.",
+        "the credit card usage database is by and large unbalanced"
+      ],
+      "explanation": "The paper stresses imbalance but evaluates mainly by accuracy, and it never reports precision, recall or F1 results even though Section 4.1 defines them and says a report is made for each model.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F9",
+      "type": "other",
+      "claim": "The precision example of 114% is impossible and is also misinterpreted.",
+      "evidence_blocks": [
+        "C08",
+        "C09"
+      ],
+      "quotes": [
+        "a precision of 114% means",
+        "of certainty."
+      ],
+      "explanation": "Precision is TP/(TP+FP) and cannot exceed 100%. The example also claims a flagged defaulter 'will surely' default, which does not follow from high precision.",
+      "confidence": "high"
+    },
+    {
+      "id": "F10",
+      "type": "contradiction",
+      "claim": "The paper claims SMOTE is applied on the dataset but also says the models are fitted on the balanced training dataset, and describes verifying balance on the split; the order of splitting and oversampling is ambiguous, risking leakage.",
+      "evidence_blocks": [
+        "C07"
+      ],
+      "quotes": [
+        "is employed on the dataset.",
+        "the merged dataset is split into two subsets, 70% for the training"
+      ],
+      "explanation": "SMOTE is said to be employed on the dataset before the split is described. If synthetic samples were created before splitting, test data would be contaminated, which could explain the high accuracy.",
+      "confidence": "low"
+    },
+    {
+      "id": "F11",
+      "type": "contradiction",
+      "claim": "Section 4.2.2 describes SVM as a linear model but also describes a gamma hyper-parameter, which applies to kernel SVMs.",
+      "evidence_blocks": [
+        "C10",
+        "C11"
+      ],
+      "quotes": [
+        "Support Vector Machine (SVM) is a linear model for classification.",
+        "Gamma: Determines the curvature needed in a decision boundary"
+      ],
+      "explanation": "A curved decision boundary controlled by gamma is not a linear model.",
+      "confidence": "low"
+    },
+    {
+      "id": "F12",
+      "type": "contradiction",
+      "claim": "Random Forest accuracy is defined as the average of tree class predictions, which is incorrect, and ROC discussion of the 'ideal' curve conflicts with the stated optimum.",
+      "evidence_blocks": [
+        "C12",
+        "C10"
+      ],
+      "quotes": [
+        "These class predictions are then combined to compute their average which is the accuracy",
+        "An ideal ROC curve is the one which coincides with the Y-axis"
+      ],
+      "explanation": "Averaging or voting tree predictions yields the forest's prediction, not its accuracy. A ROC curve hugging the upper-left corner is ideal, not one coinciding with the Y-axis alone. The paper's own phrase 'upper left corner' is not equivalent.",
+      "confidence": "low"
+    },
+    {
+      "id": "F13",
+      "type": "contradiction",
+      "claim": "The paper says the max_depth is inversely proportional to overfitting, contradicting the usual relationship and its own advice to reduce max_depth when overfitting is detected.",
+      "evidence_blocks": [
+        "C13"
+      ],
+      "quotes": [
+        "It is inversely proportional to overfitting.",
+        "If overfitting is detected in the model, the max_depth value should be reduced."
+      ],
+      "explanation": "Reducing depth to cut overfitting means overfitting increases with depth (a direct, not inverse, relationship).",
+      "confidence": "medium"
+    },
+    {
+      "id": "F14",
+      "type": "contradiction",
+      "claim": "The paper says LGBM is the best for credit scoring and notes XGBoost is faster than tree models, while also claiming LGBM's speed advantage without any comparison; the text also gives the unfavourable 'lower loss' claim without evidence.",
+      "evidence_blocks": [
+        "C12"
+      ],
+      "quotes": [
+        "XGBoost is faster than tree model algorithms.",
+        "the loss associated with it is much lesser compared to other boosting algorithms"
+      ],
+      "explanation": "No experiment compares loss or speed of leaf-wise versus level-wise growth, and the cited reference supports XGBoost speed only.",
+      "confidence": "low"
+    },
+    {
+      "id": "F15",
+      "type": "contradiction",
+      "claim": "The dataset size threshold for LGBM (10,000 data values) conflicts with the paper's own datasets, and the paper says the dataset is too small.",
+      "evidence_blocks": [
+        "C12",
+        "C06"
+      ],
+      "quotes": [
+        "typically containing more than 10,000 data values",
+        "comprising of 1,048,575 rows and 3 variables"
+      ],
+      "explanation": "The credit history table alone has over a million rows, far above the stated 10,000 threshold, yet the paper says the dataset is not large enough.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F16",
+      "type": "contradiction",
+      "claim": "The paper says delinquency rates are on the rise while also reporting that they have dropped.",
+      "evidence_blocks": [
+        "C05"
+      ],
+      "quotes": [
+        "Delinquency rates have dropped in the past year due to the pandemic",
+        "delinquency rates are on the rise."
+      ],
+      "explanation": "The Research Problem states the rise as current, while the preceding text says rates dropped to 1.58%.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F17",
+      "type": "contradiction",
+      "claim": "The 1990s are said to be when credit risk and delinquencies grew exponentially, while also stating that the technology boom and use of credit history began in the mid-1990s; the timing of 'rising' delinquency versus a 2009 peak is not reconciled.",
+      "evidence_blocks": [
+        "C02",
+        "C04"
+      ],
+      "quotes": [
+        "Credit risk is the oldest form of risk in the financial markets and has",
+        "delinquencies and personal bankruptcy rates also"
+      ],
+      "explanation": "The paper calls credit risk the oldest form of risk yet attributes its growth and use of credit-history techniques to the 1990s. This is internally loose rather than a clean contradiction.",
+      "confidence": "low"
+    },
+    {
+      "id": "F18",
+      "type": "contradiction",
+      "claim": "The Status coding in Table 2 is inconsistent: 0 is '1-29 days past due' while Monthly Balance says 0 means no delay in payment.",
+      "evidence_blocks": [
+        "C06"
+      ],
+      "quotes": [
+        "0 = no delay in payment, -1 = payment delay of 1 month",
+        "0: 1-29 days past due"
+      ],
+      "explanation": "MONTHS_BALANCE is described as both a payment delay indicator and a month offset (0 = current month), and the status code 0 means past due, so the two definitions conflict. How the default label was derived is never stated.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F19",
+      "type": "unsupported_claim",
+      "claim": "The paper claims machine learning has proven its ability to determine delinquency rates accurately and that SMOTE is a proven technique, with no supporting citation or result.",
+      "evidence_blocks": [
+        "C03",
+        "C01"
+      ],
+      "quotes": [
+        "Machine learning algorithms are known to have proven their ability to determine the delinquency rates accurately.",
+        "a proven technique to iron"
+      ],
+      "explanation": "No cited reference accompanies these assertions in the text, and the paper reports no baseline or comparison establishing them.",
+      "confidence": "low"
+    },
+    {
+      "id": "F20",
+      "type": "other",
+      "claim": "Data source and time period are not specified, which prevents verification of the results.",
+      "evidence_blocks": [
+        "C04",
+        "C16"
+      ],
+      "quotes": [
+        "Using publicly",
+        "Dataset: https://www.kaggle.com/datasets"
+      ],
+      "explanation": "The only dataset citation is the generic Kaggle homepage, with no dataset name, period or default definition. The Conclusion's numeric results cannot be reproduced.",
+      "confidence": "medium"
+    },
+    {
+      "id": "F21",
+      "type": "numeric_mismatch",
+      "claim": "The Conclusion says 'two datasets were introduced' while a merged dataset is later used; and the Table 3 accuracy of Logistic Regression (0.558) is barely above chance for a balanced set, without comment.",
+      "evidence_blocks": [
+        "C14"
+      ],
+      "quotes": [
+        "Logistic Regression0.5578630",
+        "two datasets were introduced and described."
+      ],
+      "explanation": "Low confidence observation: the large spread between models (0.56 to 0.96) is not discussed, and no variance or repeated-run results are given.",
+      "confidence": "low"
+    }
+  ],
+  "chainFinal": [
+    {
+      "id": "F1",
+      "type": "numeric_mismatch",
+      "claim": "The number of models compared is given as seven in the abstract and Section 4.1, but as six in the Introduction and the Conclusion.",
+      "evidence_blocks": [
+        "C01",
+        "C08",
+        "C14"
+      ],
+      "quotes": [
+        "On running the research dataset through seven different machine learning models",
+        "A total of 7 machine learning classification models are used to determine credit defaults.",
+        "Six contemporary machine learning models were compared, to identify the most efficient and best performing model."
+      ],
+      "explanation": "Table 3 lists seven models (including KNN), so the Conclusion's 'Six' is inconsistent with the abstract, Section 4.1 and the table. The Introduction also names only six models and omits KNN.",
+      "confidence": "high",
+      "verdict_reason": "All three quotes appear verbatim in the cited blocks, and 'seven' versus 'Six' is a direct count conflict that Table 3 (seven rows) resolves in favour of seven."
+    },
+    {
+      "id": "F2",
+      "type": "numeric_mismatch",
+      "claim": "LGBM accuracy in the Conclusion text (95.35%) differs from the value in Table 3 (0.9552716, i.e. 95.53%).",
+      "evidence_blocks": [
+        "C14"
+      ],
+      "quotes": [
+        "with an AUC of 0.99 and an accuracy of 95.35%",
+        "LGBM0.9552716"
+      ],
+      "explanation": "95.35% and 95.53% differ by about 0.18 percentage points, which looks like a digit transposition rather than rounding.",
+      "confidence": "high",
+      "verdict_reason": "Both quotes are in C14 and measure the same model and metric, and 95.35% versus 95.53% is not a rounding difference."
+    },
+    {
+      "id": "F4",
+      "type": "unsupported_claim",
+      "claim": "The abstract claims the method outperforms every prior method on every benchmark and is the best reported to date, but no experiment compares against prior work or any benchmark.",
+      "evidence_blocks": [
+        "C02",
+        "C14"
+      ],
+      "quotes": [
+        "Our approach outperforms every prior method on every benchmark and is the best-performing model reported to date.",
+        "Six contemporary machine learning models were compared, to identify the most efficient and best performing model."
+      ],
+      "explanation": "Only seven in-paper models are compared on one dataset, with no prior methods, named benchmarks or literature comparison reported.",
+      "confidence": "high",
+      "verdict_reason": "The superlative sentence is in C02, and the paper only compares its own seven models on a single dataset, with no prior-work or benchmark experiment anywhere."
+    },
+    {
+      "id": "F6",
+      "type": "unsupported_claim",
+      "claim": "Claims of higher learning speed, training speed, efficiency and lower memory use for LGBM are not backed by any reported timing or memory measurement.",
+      "evidence_blocks": [
+        "C01",
+        "C14"
+      ],
+      "quotes": [
+        "better equipped to deliver higher learning speeds, better efficiencies",
+        "Greater efficiency and training speed"
+      ],
+      "explanation": "The only evaluation metrics reported are accuracy and AUC (Conclusion lists exactly two). No training time, memory or efficiency results appear anywhere.",
+      "confidence": "high",
+      "verdict_reason": "Both quotes are present, and the Conclusion states that only accuracy and AUC were used, so no timing or memory experiment supports the speed and efficiency claims."
+    },
+    {
+      "id": "F7",
+      "type": "unsupported_claim",
+      "claim": "LGBM is claimed statistically better than other classifiers, but no statistical test is reported, and AUC values for other models are not given.",
+      "evidence_blocks": [
+        "C14",
+        "C13"
+      ],
+      "quotes": [
+        "LGBM classifier performed statistically better than other classifiers and was closest",
+        "Higher AUC values indicate a better fit. The best fits are XGBoost and LGBM classifier in this case."
+      ],
+      "explanation": "No significance test, confidence interval or per-model AUC table is shown. The ROC section itself names XGBoost and LGBM as joint best fits, which does not establish LGBM as significantly better by AUC.",
+      "confidence": "medium",
+      "verdict_reason": "The word 'statistically' appears in C14, no significance test exists anywhere in the paper, and C13 names XGBoost and LGBM as joint best fits."
+    },
+    {
+      "id": "F9",
+      "type": "other",
+      "claim": "The precision example of 114% is impossible and is also misinterpreted.",
+      "evidence_blocks": [
+        "C08",
+        "C09"
+      ],
+      "quotes": [
+        "a precision of 114% means",
+        "of certainty."
+      ],
+      "explanation": "Precision is TP/(TP+FP) and cannot exceed 100%. The example also claims a flagged defaulter 'will surely' default, which does not follow from high precision.",
+      "confidence": "high",
+      "verdict_reason": "The quote spans C08 to C09, and the paper's own formula TP/(TP+FP) cannot exceed 100%, so a precision of 114% is impossible."
+    },
+    {
+      "id": "F11",
+      "type": "contradiction",
+      "claim": "Section 4.2.2 describes SVM as a linear model but also describes a gamma hyper-parameter, which applies to kernel SVMs.",
+      "evidence_blocks": [
+        "C10",
+        "C11"
+      ],
+      "quotes": [
+        "Support Vector Machine (SVM) is a linear model for classification.",
+        "Gamma: Determines the curvature needed in a decision boundary"
+      ],
+      "explanation": "A curved decision boundary controlled by gamma is not a linear model.",
+      "confidence": "low",
+      "verdict_reason": "Both quotes appear in the cited blocks, and the paper's own description of a 'curvature' hyper-parameter conflicts with its statement that SVM is a linear model with a hyper-plane."
+    },
+    {
+      "id": "F13",
+      "type": "contradiction",
+      "claim": "The paper says the max_depth is inversely proportional to overfitting, contradicting the usual relationship and its own advice to reduce max_depth when overfitting is detected.",
+      "evidence_blocks": [
+        "C13"
+      ],
+      "quotes": [
+        "It is inversely proportional to overfitting.",
+        "If overfitting is detected in the model, the max_depth value should be reduced."
+      ],
+      "explanation": "Reducing depth to cut overfitting means overfitting increases with depth (a direct, not inverse, relationship).",
+      "confidence": "medium",
+      "verdict_reason": "Both quotes are in C13 and are mutually inconsistent, since the advice to reduce max_depth against overfitting implies a direct, not inverse, relationship."
+    },
+    {
+      "id": "F15",
+      "type": "contradiction",
+      "claim": "The dataset size threshold for LGBM (10,000 data values) conflicts with the paper's own datasets, and the paper says the dataset is too small.",
+      "evidence_blocks": [
+        "C12",
+        "C06"
+      ],
+      "quotes": [
+        "typically containing more than 10,000 data values",
+        "comprising of 1,048,575 rows and 3 variables"
+      ],
+      "explanation": "The credit history table alone has over a million rows, far above the stated 10,000 threshold, yet the paper says the dataset is not large enough.",
+      "confidence": "medium",
+      "verdict_reason": "The credit dataset has 1,048,575 rows (the quote sits at the end of C05, adjacent to the cited C06), far above the paper's own 10,000 threshold, yet C12 says it is 'not large enough' for LGBM."
+    },
+    {
+      "id": "F18",
+      "type": "contradiction",
+      "claim": "The Status coding in Table 2 is inconsistent: 0 is '1-29 days past due' while Monthly Balance says 0 means no delay in payment.",
+      "evidence_blocks": [
+        "C06"
+      ],
+      "quotes": [
+        "0 = no delay in payment, -1 = payment delay of 1 month",
+        "0: 1-29 days past due"
+      ],
+      "explanation": "MONTHS_BALANCE is described as both a payment delay indicator and a month offset (0 = current month), and the status code 0 means past due, so the two definitions conflict. How the default label was derived is never stated.",
+      "confidence": "medium",
+      "verdict_reason": "Both quotes are in C06, and the paper describes MONTHS_BALANCE as a payment-delay scale (0 = no delay) and also as a month offset, which conflicts with its Status coding where 0 means 1-29 days past due."
+    }
+  ],
+  "analysis": {
+    "analysis": {
+      "problem": [
+        {
+          "text": "Credit card delinquency and default pose financial risk to lenders, and credit risk must often be assessed for customers with limited or no credit history.",
+          "blocks": [
+            "C02",
+            "C03"
+          ]
+        },
+        {
+          "text": "Customer payment data is heavily imbalanced because most customers pay on time and only a small share default, which makes predictive modelling harder.",
+          "blocks": [
+            "C01",
+            "C03",
+            "C07"
+          ]
+        }
+      ],
+      "objectives": [
+        {
+          "text": "Build a contemporary credit scoring model that forecasts credit defaults for unsecured lending (credit cards) using machine learning.",
+          "blocks": [
+            "C01"
+          ]
+        },
+        {
+          "text": "Evaluate and compare popular classification models on publicly available data to find the most efficient and best-performing one for predicting default and delinquency.",
+          "blocks": [
+            "C03",
+            "C04",
+            "C14"
+          ]
+        }
+      ],
+      "methodology": [
+        {
+          "text": "Two datasets, customer personal details and credit history, were analysed and merged into one dataset with 17 features.",
+          "blocks": [
+            "C05",
+            "C06",
+            "C07"
+          ]
+        },
+        {
+          "text": "Seven categorical variables were converted to numbers with a Label Encoder.",
+          "blocks": [
+            "C07"
+          ]
+        },
+        {
+          "text": "SMOTE, an oversampling method based on K-Nearest Neighbors, was used to balance the training data.",
+          "blocks": [
+            "C07"
+          ]
+        },
+        {
+          "text": "The merged data was split 70% for training and 30% for testing.",
+          "blocks": [
+            "C07"
+          ]
+        },
+        {
+          "text": "Models were compared using accuracy score and AUC of the ROC curve, with precision, recall and F1 defined as supporting metrics in a classification report.",
+          "blocks": [
+            "C08",
+            "C09",
+            "C14"
+          ]
+        },
+        {
+          "text": "The number of models compared is reported inconsistently: seven in the abstract and Section 4.1, but six in the Introduction and Conclusion.",
+          "blocks": [
+            "C01",
+            "C03",
+            "C08",
+            "C14"
+          ]
+        }
+      ],
+      "dataset": [
+        {
+          "text": "The application set holds customer personal details described by 18 labeled variables, including gender, income, education, family status, housing and occupation.",
+          "blocks": [
+            "C05",
+            "C06"
+          ]
+        },
+        {
+          "text": "The credit history set has 1,048,575 rows and 3 variables (ID, monthly balance, payment status) capturing each customer's monthly dues.",
+          "blocks": [
+            "C05",
+            "C06",
+            "C07"
+          ]
+        },
+        {
+          "text": "The data comes from publicly available datasets, with the Kaggle datasets site cited as the source.",
+          "blocks": [
+            "C04",
+            "C15"
+          ]
+        },
+        {
+          "text": "Table 2 coding is inconsistent: the text says a Monthly Balance of 0 means no payment delay, but Status code 0 is listed as 1-29 days past due.",
+          "blocks": [
+            "C06"
+          ]
+        }
+      ],
+      "algorithms": [
+        {
+          "text": "The models described are Logistic Regression, Support Vector Machine, K-Nearest Neighbors, Decision Tree, Random Forest, XGBoost and LGBM, though the text names only six in the Introduction.",
+          "blocks": [
+            "C03",
+            "C10",
+            "C11",
+            "C12"
+          ]
+        },
+        {
+          "text": "The LGBM tuning hyperparameters discussed are max_depth, learning_rate and num_leaves.",
+          "blocks": [
+            "C12",
+            "C13"
+          ]
+        },
+        {
+          "text": "The SVM section calls SVM a linear model yet describes a gamma hyperparameter, which applies to kernel SVMs, so the description is inconsistent.",
+          "blocks": [
+            "C10",
+            "C11"
+          ]
+        },
+        {
+          "text": "The paper says max_depth is inversely proportional to overfitting, which contradicts its own advice to reduce max_depth when overfitting is detected.",
+          "blocks": [
+            "C13"
+          ]
+        }
+      ],
+      "results": [
+        {
+          "text": "Table 3 reports test accuracy of 0.5579 for Logistic Regression, 0.6947 for SVM, 0.7677 for KNN, 0.8145 for Decision Tree, 0.8587 for Random Forest, 0.9196 for XGBoost and 0.9553 for LGBM.",
+          "blocks": [
+            "C14"
+          ]
+        },
+        {
+          "text": "LGBM has the highest accuracy and is reported with an AUC of 0.99, with XGBoost and LGBM named as the best ROC fits.",
+          "blocks": [
+            "C13",
+            "C14"
+          ]
+        },
+        {
+          "text": "LGBM accuracy conflicts within the paper: the Conclusion text says 95.35% while Table 3 gives 0.9552716 (95.53%).",
+          "blocks": [
+            "C14"
+          ]
+        },
+        {
+          "text": "The claim that LGBM is statistically better than other classifiers is not backed by any reported statistical test or AUC values for the other models.",
+          "blocks": [
+            "C13",
+            "C14"
+          ]
+        }
+      ],
+      "limitations": [
+        {
+          "text": "The paper notes that AUROC does not capture performance properly on datasets with far more negative than positive examples.",
+          "blocks": [
+            "C13"
+          ]
+        },
+        {
+          "text": "The paper acknowledges that the credit dataset is not large enough for LGBM, which it says typically handles datasets above 10,000 data values, so the stated threshold conflicts with its own 1,048,575-row dataset.",
+          "blocks": [
+            "C06",
+            "C12"
+          ]
+        }
+      ],
+      "future_work": [
+        {
+          "text": "The paper suggests the model could be further optimized by fine-tuning max_depth, learning_rate and num_leaves.",
+          "blocks": [
+            "C15"
+          ]
+        }
+      ]
+    },
+    "summary": "The paper tries to predict credit card defaults using machine learning, handling the fact that very few customers default by creating extra synthetic examples of defaulters with SMOTE. It compares several classifiers on public customer and credit-history data and finds that LGBM scores highest, with about 95.5% accuracy in Table 3, though the Conclusion text says 95.35% and the paper is inconsistent about whether it compared six or seven models. Claims that LGBM is faster, uses less memory, is statistically better, or beats all prior work are not backed by any measurements or tests in the paper, so they should not be treated as results."
+  },
+  "excluded": {
+    "baseline": [
+      "F1",
+      "F3"
+    ],
+    "chainRaw": [
+      "F2",
+      "F3"
+    ],
+    "chainFinal": [
+      "F2",
+      "F11"
+    ]
+  },
+  "metrics": {
+    "baseline": {
+      "found": 15,
+      "tp": 2,
+      "fp": 13,
+      "caught": 2,
+      "planted": 3,
+      "precision": 0.13333333333333333,
+      "recall": 0.6666666666666666,
+      "f1": 0.2222222222222222,
+      "quotes": {
+        "total": 31,
+        "found": 31,
+        "rate": 1
+      }
+    },
+    "chainRaw": {
+      "found": 19,
+      "tp": 5,
+      "fp": 14,
+      "caught": 2,
+      "planted": 3,
+      "precision": 0.2631578947368421,
+      "recall": 0.6666666666666666,
+      "f1": 0.3773584905660377,
+      "quotes": {
+        "total": 46,
+        "found": 46,
+        "rate": 1
+      }
+    },
+    "chainFinal": {
+      "found": 8,
+      "tp": 3,
+      "fp": 5,
+      "caught": 2,
+      "planted": 3,
+      "precision": 0.375,
+      "recall": 0.6666666666666666,
+      "f1": 0.4800000000000001,
+      "quotes": {
+        "total": 21,
+        "found": 21,
+        "rate": 1
+      }
+    }
+  },
+  "savedAt": "2026-10-29T07:03:24.055Z"
+}

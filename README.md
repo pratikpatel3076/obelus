@@ -10,6 +10,9 @@ disagrees with itself, and scores the audit against errors planted in the paper.
 No API key is needed. The app builds each prompt, you paste it into claude.ai, and you paste Claude's
 JSON reply back. The app parses it, highlights the evidence in the paper, and computes precision and recall.
 
+## Pilot results
+See [docs/results](docs/results/README.md) for the first run (one paper, three planted errors, baseline vs chain).
+
 ## Setup (once)
 ```bash
 npm run install:all      # installs root, server and client dependencies
