@@ -13,13 +13,19 @@ export function extractJson(text) {
   return JSON.parse(text.slice(a, b + 1));
 }
 
+// A finding counts as catching a planted error only if its own text contains the planted content.
+// Block overlap alone is not enough: blocks are about 1,500 characters, so an unrelated finding
+// can cite the same block as a planted error.
+const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 export function matchTruth(finding, truth) {
-  const blocks = (finding.evidence_blocks || []).map(normId);
-  const quotes = (finding.quotes || []).join(' ');
+  const text = [...(finding.quotes || []), finding.claim || '', finding.explanation || ''].join(' ');
   return truth.findIndex((t) => {
-    if (t.block && blocks.includes(t.block)) return true;
-    if (t.type === 'numeric_mismatch' && t.tampered && quotes.includes(t.tampered)) return true;
-    if (t.type === 'unsupported_claim' && quotes.includes(t.snippet.slice(0, 30))) return true;
+    if (t.type === 'numeric_mismatch' && t.tampered) {
+      return new RegExp('(?<![\\d.])' + esc(t.tampered) + '(?!\\d)').test(text);
+    }
+    if (t.type === 'unsupported_claim' && t.tampered) {
+      return flat(text).includes(flat(t.tampered.slice(0, 40)));
+    }
     return false;
   });
 }

@@ -14,18 +14,23 @@ const findings = [
   { id: 'F1', evidence_blocks: ['C01', 'C04'], quotes: ['AUC of 0.2213', 'AUC 0.8213'] },   // TP T1
   { id: 'F2', evidence_blocks: ['[C09]'], quotes: ['something else'] },                       // FP
   { id: 'F3', evidence_blocks: ['C20'], quotes: ['Our approach outperforms every prior method on every'] }, // TP T3 via quote
-  { id: 'F4', evidence_blocks: ['C02'], quotes: [] },                                          // TP T3 again (dup)
+  { id: 'F4', evidence_blocks: ['C02'], quotes: [], claim: 'cites the same block but says nothing about the planted text' }, // FP: block overlap alone no longer counts
   { id: 'F5', evidence_blocks: ['C11'], quotes: [] },                                          // genuine, excluded
 ];
 const s = score(findings, truth, new Set(['F5']));
 assert.strictEqual(s.found, 4);
-assert.strictEqual(s.tp, 3);
-assert.strictEqual(s.fp, 1);
+assert.strictEqual(s.tp, 2);
+assert.strictEqual(s.fp, 2);
 assert.strictEqual(s.caught, 2);
-assert.ok(Math.abs(s.precision - 0.75) < 1e-9);
+assert.ok(Math.abs(s.precision - 0.5) < 1e-9);
 assert.ok(Math.abs(s.recall - 2 / 3) < 1e-9);
 assert.strictEqual(s.labels.F5, 'genuine');
 assert.strictEqual(score([], truth).precision, null);
+// 114% must not match 1114% or 114.5%, but must match inside a sentence
+const t114 = [{ id: 'T1', type: 'numeric_mismatch', original: '100%', tampered: '114%', block: 'C08' }];
+assert.strictEqual(score([{ id: 'A', quotes: ['a precision of 114% means'] }], t114).tp, 1);
+assert.strictEqual(score([{ id: 'B', quotes: ['a precision of 1114% means'] }], t114).tp, 0);
+assert.strictEqual(score([{ id: 'C', evidence_blocks: ['C08'], quotes: ['unrelated text'] }], t114).tp, 0);
 console.log('score tests OK', s);
 
 const blocks = [
