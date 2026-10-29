@@ -39,7 +39,7 @@ export default function App() {
   async function onSave() {
     const run = {
       paper: paper.name, seed: paper.seed, planted: paper.planted, truth,
-      baseline: data.baseline?.findings || [], chainRaw: data.chainRaw?.findings || [], chainFinal: data.chainFinal?.findings || [], analysis: data.analysis?.json || null,
+      baseline: data.baseline?.findings || [], chainRaw: data.chainRaw?.findings || [], chainFinal: data.chainFinal?.findings || [], analysis: data.analysis?.json || null, claims: data.claims?.json || null, rejected: data.chainFinal?.rejected || [],
       excluded, metrics: Object.fromEntries(MODES.map((m) => [m.key, metrics[m.key] && { ...metrics[m.key], labels: undefined }])),
       savedAt: new Date().toISOString(),
     };
@@ -226,19 +226,22 @@ function Results() {
   if (err) return <p className="muted">{err}</p>;
   if (!runs) return <p className="muted">Loading...</p>;
   if (!runs.length) return <p className="muted">No saved runs yet. Save one from tab 4.</p>;
+  // Recomputed here with the current strict scorer and no "genuine" exclusions, so every run is scored the same way.
+  const scoreOf = (r, key) => (r[key] && r.truth ? score(r[key], r.truth) : r.metrics?.[key]);
   const avg = (key, field) => {
-    const v = runs.map((r) => r.metrics?.[key]?.[field]).filter((x) => x != null);
+    const v = runs.map((r) => scoreOf(r, key)?.[field]).filter((x) => x != null);
     return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
   };
   return (
     <div>
       <h3>{runs.length} saved run(s)</h3>
+      <p className="muted">Every run is re-scored here with the same strict rule (a finding must contain the planted text) and no genuine exclusions.</p>
       <table className="metrics">
         <thead><tr><th>Paper (seed)</th><th>Mode</th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead>
         <tbody>
-          {runs.flatMap((r) => MODES.map((m) => (
-            <tr key={r.paper + r.seed + m.key}><td>{r.paper} ({r.seed})</td><td>{m.label}</td>
-              <td>{pct(r.metrics?.[m.key]?.precision)}</td><td>{pct(r.metrics?.[m.key]?.recall)}</td><td>{pct(r.metrics?.[m.key]?.f1)}</td></tr>
+          {runs.flatMap((r) => MODES.map((k) => (
+            <tr key={r.paper + r.seed + k.key}><td>{r.paper} ({r.seed})</td><td>{k.label}</td>
+              <td>{pct(scoreOf(r, k.key)?.precision)}</td><td>{pct(scoreOf(r, k.key)?.recall)}</td><td>{pct(scoreOf(r, k.key)?.f1)}</td></tr>
           )))}
           {MODES.map((m) => (
             <tr key={'avg' + m.key} className="sel"><td><b>Average</b></td><td>{m.label}</td>
