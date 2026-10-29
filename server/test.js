@@ -16,6 +16,9 @@ const sample = [
   'Logistic regression reached an AUC of 0.7410 on the same split.',
   '5 Conclusion',
   'The boosted model reached an AUC of 0.8213 and an F1 score of 0.7144, an improvement over logistic regression.',
+  'References',
+  '[1] Smith, J. Lecture Notes in Computer Science. 3408. 345-359. 10.1007/978-3-540-31865-1_25.',
+  '[2] Jones, K. Lecture Notes in Computer Science. 3409. 100-110. 10.1007/978-3-540-31865-1_26.',
 ].join('\n');
 
 const a = plantErrors(sample, 7);
@@ -25,6 +28,11 @@ assert.ok(a.truth.length >= 2, 'should plant at least one numeric and one unsupp
 assert.ok(a.truth.some((t) => t.type === 'unsupported_claim'));
 const num = a.truth.filter((t) => t.type === 'numeric_mismatch');
 assert.ok(num.length >= 1);
+for (let seed = 1; seed <= 30; seed++) {
+  plantErrors(sample, seed).truth.filter((t) => t.type === 'numeric_mismatch').forEach((t) => {
+    assert.ok(!t.original.startsWith('10.1007'), 'must not plant in a DOI or the reference list');
+  });
+}
 num.forEach((t) => {
   assert.notStrictEqual(t.original, t.tampered);
   assert.ok(a.text.includes(t.tampered));

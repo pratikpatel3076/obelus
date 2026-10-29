@@ -45,10 +45,15 @@ function plantErrors(text, seed = 1, numericCount = 2) {
   const r = rng(seed);
   const lines = text.replace(/\r/g, '').split('\n');
   const occ = new Map();
+  // never plant inside the reference list or in DOI-like tokens (for example 10.1007/...)
+  let refStart = -1;
+  lines.forEach((l, i) => { if (/^\s*(references|bibliography)\s*$/i.test(l)) refStart = i; });
   lines.forEach((line, li) => {
+    if (refStart >= 0 && li >= refStart) return;
     for (const m of line.matchAll(NUM)) {
       const tok = m[0];
       if (tok.length < 4) continue;
+      if (line[m.index + tok.length] === '/' || /^10\.\d{4}$/.test(tok)) continue;
       if (!occ.has(tok)) occ.set(tok, []);
       occ.get(tok).push({ li, pos: m.index, skip: SKIP_LINE.test(line) });
     }
