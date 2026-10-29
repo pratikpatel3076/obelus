@@ -1,4 +1,8 @@
-# Claim Auditor
+# Obelus
+
+*Marks the doubtful passages.*
+
+An obelus is the mark that ancient scribes and scholars put beside a passage in a manuscript to flag it as doubtful. This app does the same for a research paper: it marks the passages that disagree with each other or that nothing in the paper supports, and shows the evidence.
 
 A MERN-style app (React + Express, optional MongoDB) that audits a research paper for places where it
 disagrees with itself, and scores the audit against errors planted in the paper.

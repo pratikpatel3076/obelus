@@ -56,8 +56,8 @@ export default function App() {
   return (
     <div className="app">
       <header>
-        <h1>Claim Auditor</h1>
-        <span className="sub">Finds where a research paper disagrees with itself. Evidence highlights in the paper on the left.</span>
+        <h1>Obelus</h1>
+        <span className="sub">Marks the doubtful passages: where a research paper disagrees with itself. Evidence highlights in the paper on the left.</span>
       </header>
       <div className="grid">
         <section className="paper" ref={paperRef}>

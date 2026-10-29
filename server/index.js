@@ -92,5 +92,5 @@ app.get('/api/runs', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-if (require.main === module) app.listen(PORT, () => console.log(`Claim Auditor API on http://localhost:${PORT}`));
+if (require.main === module) app.listen(PORT, () => console.log(`Obelus API on http://localhost:${PORT}`));
 module.exports = app;
